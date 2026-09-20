@@ -1,0 +1,8 @@
+{
+  "appId": "com.algo.quiz",
+  "appName": "算法岗刷题",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "https"
+  }
+}

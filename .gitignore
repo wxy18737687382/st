@@ -1,0 +1,22 @@
+# Node dependencies
+node_modules/
+algo-quiz-app/node_modules/
+
+# Build artifacts
+dist/
+algo-quiz-app/dist/
+algo-quiz-app/release/
+*.exe
+*.lnk
+android/
+algo-quiz-app/android/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS and IDE files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
