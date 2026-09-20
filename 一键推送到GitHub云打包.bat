@@ -60,7 +60,7 @@ if %errorlevel% equ 0 (
     echo ========================================================================
     echo.
     echo  👉 如何获取你的手机 APK：
-    echo  1. 打开你的 GitHub 仓库网页。
+    echo  1. 打开你的 GitHub 仓库网页: https://github.com/wxy18737687382/st
     echo  2. 点击顶部导航栏的【Actions】标签页。
     echo  3. 可以看到正在运行的【全自动云端打包 (Android APK)】流水线。
     echo  4. 等待 2~3 分钟完成后，进入页面下方的【Artifacts】，
@@ -68,9 +68,17 @@ if %errorlevel% equ 0 (
     echo ========================================================================
 ) else (
     echo.
-    echo [提示] 推送遇到问题，请检查：
-    echo 1. 仓库地址是否输入正确？
-    echo 2. 是否已登录 GitHub 账号并拥有该仓库写入权限？
+    echo ========================================================================
+    echo  [推送遇到问题排查]
+    echo  若远程仓库在创建时勾选了 README/License，导致推送被拒绝，可尝试强制推送到 main 分支：
+    echo ========================================================================
+    set /p DO_FORCE="是否尝试强制推送到 GitHub? (输入 y 并按回车重试): "
+    if /i "%DO_FORCE%"=="y" (
+        git push -u origin main --force
+        if %errorlevel% equ 0 (
+            echo [成功] 强制推送成功！请前往 GitHub Actions 查看编译进度。
+        )
+    )
 )
 
 echo.
