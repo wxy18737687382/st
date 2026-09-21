@@ -19,7 +19,7 @@ const MainLayout: React.FC = () => {
       <LeetCodeNavbar onOpenExamModal={() => setIsExamModalOpen(true)} />
 
       {/* Main View Area */}
-      <main className="flex-1 overflow-hidden flex flex-col min-h-0 pb-14 md:pb-0">
+      <main className="flex-1 overflow-hidden flex flex-col min-h-0 pb-[calc(3.5rem+var(--sab,0px))] md:pb-0">
         {(mode === 'workbench' || mode === 'practice') && <LeetCodeWorkbench />}
         {mode === 'problems' && (
           <div className="flex-1 overflow-y-auto">

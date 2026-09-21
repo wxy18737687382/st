@@ -19,7 +19,7 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ onOpenExamModa
   ];
 
   return (
-    <nav className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 dark:bg-[#1a1a1a]/95 backdrop-blur border-t border-slate-200 dark:border-[#333] safe-area-bottom">
+    <nav className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 dark:bg-[#1a1a1a]/95 backdrop-blur border-t border-slate-200 dark:border-[#333] pb-[var(--sab,0px)]">
       <div className="grid grid-cols-5 h-14">
         {navItems.map(item => {
           const isActive =

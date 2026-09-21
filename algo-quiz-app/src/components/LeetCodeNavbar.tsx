@@ -67,9 +67,10 @@ export const LeetCodeNavbar: React.FC<LeetCodeNavbarProps> = ({ onOpenExamModal 
   );
 
   return (
-    <header className="h-12 bg-white dark:bg-[#1a1a1a] border-b border-slate-200 dark:border-[#282828] text-slate-800 dark:text-slate-200 px-3 sm:px-4 flex items-center justify-between select-none z-30 relative transition-colors">
-      {/* Left: Brand + Navigation Modes */}
-      <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+    <header className="bg-white dark:bg-[#1a1a1a] border-b border-slate-200 dark:border-[#282828] text-slate-800 dark:text-slate-200 select-none z-30 relative transition-colors pt-[var(--sat,0px)] shrink-0">
+      <div className="h-12 px-3 sm:px-4 flex items-center justify-between">
+        {/* Left: Brand + Navigation Modes */}
+        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
         {/* LeetCode Icon */}
         <div
           onClick={() => setMode('problems')}
@@ -183,7 +184,7 @@ export const LeetCodeNavbar: React.FC<LeetCodeNavbarProps> = ({ onOpenExamModal 
                 onClick={() => setIsDropdownOpen(false)}
               />
 
-              <div className="fixed inset-x-3 top-13 sm:inset-auto sm:top-full sm:mt-1.5 sm:left-1/2 sm:-translate-x-1/2 sm:w-80 max-h-[70vh] sm:max-h-96 bg-white dark:bg-[#262626] border border-slate-200 dark:border-[#3a3a3a] rounded-xl shadow-2xl overflow-hidden flex flex-col z-50 animate-fadeIn">
+              <div className="fixed inset-x-3 top-[calc(3.5rem+var(--sat,0px))] sm:inset-auto sm:top-full sm:mt-1.5 sm:left-1/2 sm:-translate-x-1/2 sm:w-80 max-h-[70vh] sm:max-h-96 bg-white dark:bg-[#262626] border border-slate-200 dark:border-[#3a3a3a] rounded-xl shadow-2xl overflow-hidden flex flex-col z-50 animate-fadeIn">
                 <div className="p-2 border-b border-slate-200 dark:border-[#3a3a3a]">
                   <div className="relative">
                     <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
@@ -285,6 +286,7 @@ export const LeetCodeNavbar: React.FC<LeetCodeNavbarProps> = ({ onOpenExamModal 
           AC
         </div>
       </div>
-    </header>
+    </div>
+  </header>
   );
 };
