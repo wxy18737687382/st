@@ -42,6 +42,7 @@ export const ChoiceExamWorkbench: React.FC = () => {
   const selectedKey = currentQuestion ? progress.choiceAnswers[currentQuestion.id] : undefined;
   const [hasAnswered, setHasAnswered] = useState(!!selectedKey);
   const [sheetFilter, setSheetFilter] = useState<'all' | 'wrong' | 'unanswered'>('all');
+  const [isMobileSheetOpen, setIsMobileSheetOpen] = useState(false);
 
   useEffect(() => {
     if (currentQuestion) {
@@ -128,20 +129,134 @@ export const ChoiceExamWorkbench: React.FC = () => {
     return true;
   });
 
+  const renderAnswerSheet = (isDrawer = false) => (
+    <div className="flex flex-col h-full overflow-hidden">
+      {/* Sheet Header & Stats */}
+      <div className="p-3 sm:p-4 bg-slate-50 dark:bg-[#222] border-b border-slate-200 dark:border-[#333] space-y-2.5 sm:space-y-3 shrink-0">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <ListOrdered className="w-4 h-4 text-indigo-500" />
+            <h3 className="font-bold text-xs sm:text-sm text-slate-900 dark:text-white">
+              选择题答题卡
+            </h3>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-mono text-slate-400">
+              已答 {choiceStats.answered} / {choiceStats.total}
+            </span>
+            {isDrawer && (
+              <button
+                onClick={() => setIsMobileSheetOpen(false)}
+                className="w-6 h-6 rounded-full bg-slate-200 dark:bg-[#333] text-slate-500 hover:text-slate-900 dark:hover:text-white flex items-center justify-center text-xs font-bold"
+              >
+                ✕
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Quick Stats Grid */}
+        <div className="grid grid-cols-3 gap-2 text-center text-xs">
+          <div className="p-2 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900/40">
+            <div className="text-slate-400 text-[10px]">正确</div>
+            <div className="text-emerald-500 font-bold font-mono text-sm mt-0.5">
+              {choiceStats.correct}
+            </div>
+          </div>
+
+          <div className="p-2 rounded-lg bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900/40">
+            <div className="text-slate-400 text-[10px]">错误</div>
+            <div className="text-rose-500 font-bold font-mono text-sm mt-0.5">
+              {choiceStats.wrong}
+            </div>
+          </div>
+
+          <div className="p-2 rounded-lg bg-indigo-50 dark:bg-indigo-950/30 border border-indigo-200 dark:border-indigo-900/40">
+            <div className="text-slate-400 text-[10px]">正确率</div>
+            <div className="text-indigo-500 font-bold font-mono text-sm mt-0.5">
+              {choiceStats.accuracy}%
+            </div>
+          </div>
+        </div>
+
+        {/* Sheet Filters */}
+        <div className="flex gap-1 pt-1 text-xs">
+          {(['all', 'wrong', 'unanswered'] as const).map(f => (
+            <button
+              key={f}
+              onClick={() => setSheetFilter(f)}
+              className={`flex-1 py-1 rounded-md text-[11px] font-medium transition ${
+                sheetFilter === f
+                  ? 'bg-indigo-600 text-white font-bold'
+                  : 'bg-white dark:bg-[#333] text-slate-600 dark:text-slate-300 hover:bg-slate-200'
+              }`}
+            >
+              {f === 'all' ? '全部' : f === 'wrong' ? '错题本' : '未作答'}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Numbers Matrix Grid */}
+      <div className="flex-1 overflow-y-auto p-3 custom-scrollbar">
+        <div className="grid grid-cols-6 sm:grid-cols-7 gap-1.5">
+          {sheetList.map((q, idx) => {
+            const ans = progress.choiceAnswers[q.id];
+            const isCur = q.id === currentQuestion.id;
+            const isCorrect = ans && ans.toUpperCase() === q.correctAnswer?.trim().toUpperCase();
+            const isWrong = ans && !isCorrect;
+
+            let btnStyle =
+              'bg-slate-100 dark:bg-[#202020] text-slate-500 dark:text-slate-400 border-slate-200 dark:border-[#333] hover:bg-slate-200';
+
+            if (isCorrect) {
+              btnStyle = 'bg-emerald-500 text-white border-emerald-600 font-bold';
+            } else if (isWrong) {
+              btnStyle = 'bg-rose-500 text-white border-rose-600 font-bold';
+            }
+
+            if (isCur) {
+              btnStyle += ' ring-2 ring-indigo-500 ring-offset-2 dark:ring-offset-[#262626]';
+            }
+
+            return (
+              <button
+                key={q.id}
+                onClick={() => {
+                  setCurrentQuestionId(q.id);
+                  if (isDrawer) setIsMobileSheetOpen(false);
+                }}
+                className={`h-8 rounded-lg text-xs font-mono transition border flex items-center justify-center ${btnStyle}`}
+              >
+                {idx + 1}
+              </button>
+            );
+          })}
+        </div>
+
+        {sheetList.length === 0 && (
+          <div className="text-center py-12 text-slate-400 text-xs">
+            当前分类下暂无题目
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
   return (
-    <div className="flex-1 flex flex-col h-[calc(100vh-3rem)] overflow-hidden bg-slate-50 dark:bg-[#1a1a1a] text-slate-800 dark:text-slate-200">
+    <div className="h-full flex-1 flex flex-col overflow-hidden min-h-0 bg-slate-50 dark:bg-[#1a1a1a] text-slate-800 dark:text-slate-200">
       {/* Choice Exam Workspace Grid */}
-      <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-3 p-3 overflow-hidden max-w-7xl w-full mx-auto">
+      <div className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-3 p-2 sm:p-3 overflow-hidden max-w-7xl w-full mx-auto">
         {/* MAIN COLUMN (8 cols): Question Stem, Option Cards, Answer & Analysis */}
-        <div className="lg:col-span-8 flex flex-col bg-white dark:bg-[#262626] rounded-2xl border border-slate-200 dark:border-[#333] shadow-xs overflow-hidden">
+        <div className="lg:col-span-8 flex flex-col bg-white dark:bg-[#262626] rounded-2xl border border-slate-200 dark:border-[#333] shadow-xs overflow-hidden min-h-0">
           {/* Header Bar */}
-          <div className="h-12 bg-slate-50 dark:bg-[#222] border-b border-slate-200 dark:border-[#333] flex items-center justify-between px-4 text-xs select-none">
-            <div className="flex items-center gap-2">
-              <span className="px-2.5 py-1 rounded-md bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 font-bold border border-indigo-500/20 flex items-center gap-1">
-                <HelpCircle className="w-3.5 h-3.5" /> 单选题
+          <div className="h-12 bg-slate-50 dark:bg-[#222] border-b border-slate-200 dark:border-[#333] flex items-center justify-between px-3 sm:px-4 text-xs select-none">
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <span className="px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-md bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 font-bold border border-indigo-500/20 flex items-center gap-1">
+                <HelpCircle className="w-3.5 h-3.5" /> 单选
               </span>
               <span className="text-slate-400">·</span>
-              <span className="font-semibold text-slate-700 dark:text-slate-300">
+              <span className="font-semibold text-slate-700 dark:text-slate-300 truncate max-w-[90px] xs:max-w-[140px] sm:max-w-none">
                 {currentQuestion.category}
               </span>
               <span className="text-slate-400 hidden sm:inline">/</span>
@@ -149,7 +264,16 @@ export const ChoiceExamWorkbench: React.FC = () => {
             </div>
 
             <div className="flex items-center gap-2">
-              <span className="text-slate-400 font-mono">
+              {/* Mobile Answer Sheet Trigger Button (< lg) */}
+              <button
+                onClick={() => setIsMobileSheetOpen(true)}
+                className="lg:hidden flex items-center gap-1 px-2.5 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 font-bold border border-indigo-200 dark:border-indigo-800 text-[11px]"
+              >
+                <ListOrdered className="w-3.5 h-3.5" />
+                <span>答题卡 ({choiceStats.answered}/{choiceStats.total})</span>
+              </button>
+
+              <span className="text-slate-400 font-mono hidden sm:inline">
                 第 <strong className="text-slate-800 dark:text-white">{currentChoiceIndex + 1}</strong> / {choiceQuestions.length} 题
               </span>
               <button
@@ -167,7 +291,7 @@ export const ChoiceExamWorkbench: React.FC = () => {
           </div>
 
           {/* Question Stem & Content Scroll Area */}
-          <div className="flex-1 overflow-y-auto p-5 sm:p-7 custom-scrollbar space-y-6">
+          <div className="flex-1 overflow-y-auto p-4 sm:p-7 custom-scrollbar space-y-5 sm:space-y-6">
             {/* Title / Question Stem */}
             <div>
               <div className="flex items-center gap-2 mb-2 text-xs text-slate-400 font-mono">
@@ -294,127 +418,45 @@ export const ChoiceExamWorkbench: React.FC = () => {
           </div>
 
           {/* Bottom Action Footer */}
-          <div className="h-14 bg-slate-50 dark:bg-[#222] border-t border-slate-200 dark:border-[#333] flex items-center justify-between px-4 select-none">
+          <div className="h-14 bg-slate-50 dark:bg-[#222] border-t border-slate-200 dark:border-[#333] flex items-center justify-between px-3 sm:px-4 select-none shrink-0">
             <button
               onClick={prevQuestion}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-xl border border-slate-200 dark:border-[#3a3a3a] text-xs font-semibold hover:bg-slate-100 dark:hover:bg-[#333] transition"
+              className="flex items-center gap-1 sm:gap-1.5 px-3.5 sm:px-4 py-2 rounded-xl border border-slate-200 dark:border-[#3a3a3a] text-xs font-semibold hover:bg-slate-100 dark:hover:bg-[#333] transition active:scale-95"
             >
-              <ChevronLeft className="w-4 h-4" /> 上一题 (J / ←)
+              <ChevronLeft className="w-4 h-4" /> <span>上一题</span>
             </button>
 
-            <div className="hidden sm:flex items-center gap-2 text-xs text-slate-400">
-              <span>快捷键：按键 <kbd className="px-1.5 py-0.5 rounded bg-slate-200 dark:bg-[#333] font-mono">A</kbd> <kbd className="px-1.5 py-0.5 rounded bg-slate-200 dark:bg-[#333] font-mono">B</kbd> <kbd className="px-1.5 py-0.5 rounded bg-slate-200 dark:bg-[#333] font-mono">C</kbd> <kbd className="px-1.5 py-0.5 rounded bg-slate-200 dark:bg-[#333] font-mono">D</kbd> 直接做题</span>
+            <div className="flex items-center gap-2 text-xs text-slate-400 font-mono">
+              <span>第 <strong className="text-slate-800 dark:text-white">{currentChoiceIndex + 1}</strong> / {choiceQuestions.length} 题</span>
             </div>
 
             <button
               onClick={nextQuestion}
-              className="flex items-center gap-1.5 px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-sm transition active:scale-95"
+              className="flex items-center gap-1 sm:gap-1.5 px-4 sm:px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-sm transition active:scale-95"
             >
-              下一题 (K / →) <ChevronRight className="w-4 h-4" />
+              <span>下一题</span> <ChevronRight className="w-4 h-4" />
             </button>
           </div>
         </div>
 
-        {/* SIDEBAR COLUMN (4 cols): 答题卡 (Choice Question Grid Sheet) */}
-        <div className="lg:col-span-4 flex flex-col bg-white dark:bg-[#262626] rounded-2xl border border-slate-200 dark:border-[#333] shadow-xs overflow-hidden">
-          {/* Sheet Header & Stats */}
-          <div className="p-4 bg-slate-50 dark:bg-[#222] border-b border-slate-200 dark:border-[#333] space-y-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <ListOrdered className="w-4 h-4 text-indigo-500" />
-                <h3 className="font-bold text-xs sm:text-sm text-slate-900 dark:text-white">
-                  选择题答题卡
-                </h3>
-              </div>
-              <span className="text-xs font-mono text-slate-400">
-                已答 {choiceStats.answered} / {choiceStats.total}
-              </span>
-            </div>
-
-            {/* Quick Stats Grid */}
-            <div className="grid grid-cols-3 gap-2 text-center text-xs">
-              <div className="p-2 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900/40">
-                <div className="text-slate-400 text-[10px]">正确</div>
-                <div className="text-emerald-500 font-bold font-mono text-sm mt-0.5">
-                  {choiceStats.correct}
-                </div>
-              </div>
-
-              <div className="p-2 rounded-lg bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900/40">
-                <div className="text-slate-400 text-[10px]">错误</div>
-                <div className="text-rose-500 font-bold font-mono text-sm mt-0.5">
-                  {choiceStats.wrong}
-                </div>
-              </div>
-
-              <div className="p-2 rounded-lg bg-indigo-50 dark:bg-indigo-950/30 border border-indigo-200 dark:border-indigo-900/40">
-                <div className="text-slate-400 text-[10px]">正确率</div>
-                <div className="text-indigo-500 font-bold font-mono text-sm mt-0.5">
-                  {choiceStats.accuracy}%
-                </div>
-              </div>
-            </div>
-
-            {/* Sheet Filters */}
-            <div className="flex gap-1 pt-1 text-xs">
-              {(['all', 'wrong', 'unanswered'] as const).map(f => (
-                <button
-                  key={f}
-                  onClick={() => setSheetFilter(f)}
-                  className={`flex-1 py-1 rounded-md text-[11px] font-medium transition ${
-                    sheetFilter === f
-                      ? 'bg-indigo-600 text-white font-bold'
-                      : 'bg-white dark:bg-[#333] text-slate-600 dark:text-slate-300 hover:bg-slate-200'
-                  }`}
-                >
-                  {f === 'all' ? '全部' : f === 'wrong' ? '错题本' : '未作答'}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Numbers Matrix Grid */}
-          <div className="flex-1 overflow-y-auto p-3 custom-scrollbar">
-            <div className="grid grid-cols-6 sm:grid-cols-7 gap-1.5">
-              {sheetList.map((q, idx) => {
-                const ans = progress.choiceAnswers[q.id];
-                const isCur = q.id === currentQuestion.id;
-                const isCorrect = ans && ans.toUpperCase() === q.correctAnswer?.trim().toUpperCase();
-                const isWrong = ans && !isCorrect;
-
-                let btnStyle =
-                  'bg-slate-100 dark:bg-[#202020] text-slate-500 dark:text-slate-400 border-slate-200 dark:border-[#333] hover:bg-slate-200';
-
-                if (isCorrect) {
-                  btnStyle = 'bg-emerald-500 text-white border-emerald-600 font-bold';
-                } else if (isWrong) {
-                  btnStyle = 'bg-rose-500 text-white border-rose-600 font-bold';
-                }
-
-                if (isCur) {
-                  btnStyle += ' ring-2 ring-indigo-500 ring-offset-2 dark:ring-offset-[#262626]';
-                }
-
-                return (
-                  <button
-                    key={q.id}
-                    onClick={() => setCurrentQuestionId(q.id)}
-                    className={`h-8 rounded-lg text-xs font-mono transition border flex items-center justify-center ${btnStyle}`}
-                  >
-                    {idx + 1}
-                  </button>
-                );
-              })}
-            </div>
-
-            {sheetList.length === 0 && (
-              <div className="text-center py-12 text-slate-400 text-xs">
-                当前分类下暂无题目
-              </div>
-            )}
-          </div>
+        {/* SIDEBAR COLUMN (4 cols): 答题卡 (Desktop Only) */}
+        <div className="hidden lg:flex lg:col-span-4 flex-col bg-white dark:bg-[#262626] rounded-2xl border border-slate-200 dark:border-[#333] shadow-xs overflow-hidden min-h-0">
+          {renderAnswerSheet(false)}
         </div>
       </div>
+
+      {/* Mobile Drawer (Bottom Sheet Modal for Answer Sheet) */}
+      {isMobileSheetOpen && (
+        <div className="fixed inset-0 z-50 flex flex-col justify-end lg:hidden bg-black/60 backdrop-blur-xs animate-fadeIn">
+          <div
+            className="fixed inset-0"
+            onClick={() => setIsMobileSheetOpen(false)}
+          />
+          <div className="relative bg-white dark:bg-[#262626] rounded-t-3xl border-t border-slate-200 dark:border-[#333] max-h-[82vh] h-[550px] flex flex-col overflow-hidden shadow-2xl z-10 animate-slideUp">
+            {renderAnswerSheet(true)}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

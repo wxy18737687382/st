@@ -44,10 +44,39 @@ export const CodeSandboxView: React.FC = () => {
         </div>
       </div>
 
-      {/* Grid: Left Operators List, Right Code & Workspace */}
+      {/* Mobile Horizontal Operator Picker (< lg) */}
+      <div className="lg:hidden mb-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-2.5 shadow-xs">
+        <div className="text-[11px] font-bold text-slate-400 mb-1.5 px-1 uppercase tracking-wider">
+          选择手撕算子 ({codeQuestions.length})
+        </div>
+        <div className="flex items-center gap-1.5 overflow-x-auto custom-scrollbar pb-1">
+          {codeQuestions.map(q => {
+            const isSelected = activeQuestion?.id === q.id;
+            const isMastered = progress.status[q.id] === 'mastered';
+            return (
+              <button
+                key={q.id}
+                onClick={() => setCurrentQuestionId(q.id)}
+                className={`px-3 py-1.5 rounded-lg text-xs whitespace-nowrap transition shrink-0 flex items-center gap-1.5 ${
+                  isSelected
+                    ? 'bg-emerald-600 text-white font-bold shadow-xs'
+                    : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200'
+                }`}
+              >
+                <span>{q.title.replace(/^\d+\.\s+/, '')}</span>
+                {isMastered && (
+                  <CheckCircle2 className={`w-3 h-3 ${isSelected ? 'text-white' : 'text-emerald-500'}`} />
+                )}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Grid: Left Operators List (Desktop), Right Code & Workspace */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
-        {/* Left Column: 36 Code questions */}
-        <div className="lg:col-span-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-3 max-h-[750px] overflow-y-auto custom-scrollbar">
+        {/* Left Column: 36 Code questions (Desktop Only) */}
+        <div className="hidden lg:block lg:col-span-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-3 max-h-[750px] overflow-y-auto custom-scrollbar">
           <div className="text-xs font-bold text-slate-400 px-2 py-1 uppercase tracking-wider mb-1">
             选择手撕算子 ({codeQuestions.length})
           </div>
@@ -92,7 +121,7 @@ export const CodeSandboxView: React.FC = () => {
         </div>
 
         {/* Right Column: Code Editor & Details */}
-        <div className="lg:col-span-8 space-y-4">
+        <div className="col-span-1 lg:col-span-8 space-y-4">
           {activeQuestion && (
             <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-xs">
               <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-100 dark:border-slate-800">

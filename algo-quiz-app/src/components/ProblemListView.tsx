@@ -61,15 +61,15 @@ export const ProblemListView: React.FC = () => {
       </div>
 
       {/* Filter Toolbar */}
-      <div className="flex flex-wrap items-center justify-between gap-3 p-3 bg-white dark:bg-[#262626] rounded-xl border border-slate-200 dark:border-[#333] text-xs">
-        {/* Left Filter Pills */}
-        <div className="flex flex-wrap items-center gap-1.5">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-3 bg-white dark:bg-[#262626] rounded-xl border border-slate-200 dark:border-[#333] text-xs">
+        {/* Left Filter Pills - Scrollable on mobile */}
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 custom-scrollbar">
           {/* Difficulty Filter */}
           {(['All', 'Easy', 'Medium', 'Hard'] as const).map(diff => (
             <button
               key={diff}
               onClick={() => setSelectedDifficulty(diff)}
-              className={`px-3 py-1 rounded-lg font-medium transition ${
+              className={`px-3 py-1 rounded-lg font-medium transition whitespace-nowrap shrink-0 ${
                 selectedDifficulty === diff
                   ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold shadow-xs'
                   : 'bg-slate-100 dark:bg-[#333] text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-[#3d3d3d]'
@@ -79,12 +79,12 @@ export const ProblemListView: React.FC = () => {
             </button>
           ))}
 
-          <div className="h-4 w-[1px] bg-slate-200 dark:bg-[#444] mx-1"></div>
+          <div className="h-4 w-[1px] bg-slate-200 dark:bg-[#444] mx-1 shrink-0"></div>
 
           {/* Type Filter */}
           <button
             onClick={() => setSelectedType(selectedType === 'choice' ? 'All' : 'choice')}
-            className={`px-3 py-1 rounded-lg font-medium transition ${
+            className={`px-3 py-1 rounded-lg font-medium transition whitespace-nowrap shrink-0 ${
               selectedType === 'choice'
                 ? 'bg-[#ffa116] text-slate-950 font-bold shadow-xs'
                 : 'bg-slate-100 dark:bg-[#333] text-slate-600 dark:text-slate-400 hover:bg-slate-200'
@@ -95,7 +95,7 @@ export const ProblemListView: React.FC = () => {
 
           <button
             onClick={() => setSelectedType(selectedType === 'code' ? 'All' : 'code')}
-            className={`px-3 py-1 rounded-lg font-medium transition ${
+            className={`px-3 py-1 rounded-lg font-medium transition whitespace-nowrap shrink-0 ${
               selectedType === 'code'
                 ? 'bg-[#00b8a3] text-slate-950 font-bold shadow-xs'
                 : 'bg-slate-100 dark:bg-[#333] text-slate-600 dark:text-slate-400 hover:bg-slate-200'
@@ -106,7 +106,7 @@ export const ProblemListView: React.FC = () => {
 
           <button
             onClick={() => setSelectedType(selectedType === 'algorithm' ? 'All' : 'algorithm')}
-            className={`px-3 py-1 rounded-lg font-medium transition ${
+            className={`px-3 py-1 rounded-lg font-medium transition whitespace-nowrap shrink-0 ${
               selectedType === 'algorithm'
                 ? 'bg-blue-500 text-white font-bold shadow-xs'
                 : 'bg-slate-100 dark:bg-[#333] text-slate-600 dark:text-slate-400 hover:bg-slate-200'
@@ -117,7 +117,7 @@ export const ProblemListView: React.FC = () => {
         </div>
 
         {/* Search & Reset */}
-        <div className="flex items-center gap-2 w-full sm:w-auto">
+        <div className="flex items-center gap-2 w-full sm:w-auto shrink-0">
           <div className="relative flex-1 sm:w-56">
             <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
             <input
@@ -145,11 +145,11 @@ export const ProblemListView: React.FC = () => {
           <table className="w-full text-xs text-left">
             <thead className="bg-slate-50 dark:bg-[#202020] text-slate-400 uppercase font-semibold border-b border-slate-200 dark:border-[#333] text-[11px]">
               <tr>
-                <th className="py-3 px-4 w-12 text-center">状态</th>
-                <th className="py-3 px-4">题目</th>
-                <th className="py-3 px-3 w-20 text-center">题解</th>
-                <th className="py-3 px-4 w-28">通过率</th>
-                <th className="py-3 px-4 w-24">难度</th>
+                <th className="py-3 px-2 sm:px-4 w-10 sm:w-12 text-center">状态</th>
+                <th className="py-3 px-2 sm:px-4">题目</th>
+                <th className="py-3 px-3 w-20 text-center hidden sm:table-cell">题解</th>
+                <th className="py-3 px-4 w-28 hidden sm:table-cell">通过率</th>
+                <th className="py-3 px-2 sm:px-4 w-20 sm:w-24 text-right sm:text-left">难度</th>
                 <th className="py-3 px-4 hidden md:table-cell">专题分类</th>
                 <th className="py-3 px-4 hidden lg:table-cell">高频大厂</th>
               </tr>
@@ -166,7 +166,7 @@ export const ProblemListView: React.FC = () => {
                     className="hover:bg-slate-50 dark:hover:bg-[#2d2d2d] cursor-pointer transition-colors group"
                   >
                     {/* Status Checkbox */}
-                    <td className="py-3 px-4 text-center">
+                    <td className="py-3 px-2 sm:px-4 text-center">
                       {isMastered ? (
                         <CheckCircle2 className="w-4 h-4 text-[#00b8a3] mx-auto" />
                       ) : isWrong ? (
@@ -177,27 +177,27 @@ export const ProblemListView: React.FC = () => {
                     </td>
 
                     {/* Title */}
-                    <td className="py-3 px-4 font-medium text-slate-900 dark:text-slate-100 group-hover:text-[#00b8a3] transition-colors">
-                      <div className="flex items-center gap-2">
-                        <span className="text-slate-400 font-mono text-[11px]">#{q.qid}</span>
-                        <span className="truncate max-w-sm sm:max-w-md">{q.title}</span>
+                    <td className="py-3 px-2 sm:px-4 font-medium text-slate-900 dark:text-slate-100 group-hover:text-[#00b8a3] transition-colors">
+                      <div className="flex items-center gap-1.5 sm:gap-2">
+                        <span className="text-slate-400 font-mono text-[11px] shrink-0">#{q.qid}</span>
+                        <span className="truncate max-w-[170px] xs:max-w-xs sm:max-w-md">{q.title}</span>
                       </div>
                     </td>
 
                     {/* Solutions Icon */}
-                    <td className="py-3 px-3 text-center">
+                    <td className="py-3 px-3 text-center hidden sm:table-cell">
                       <span className="inline-flex items-center justify-center text-slate-400 group-hover:text-[#ffa116]">
                         <BookOpen className="w-3.5 h-3.5" />
                       </span>
                     </td>
 
                     {/* Acceptance */}
-                    <td className="py-3 px-4 font-mono text-slate-500 dark:text-slate-400 text-[11px]">
+                    <td className="py-3 px-4 font-mono text-slate-500 dark:text-slate-400 text-[11px] hidden sm:table-cell">
                       {q.acceptanceRate || '54.2%'}
                     </td>
 
                     {/* Difficulty */}
-                    <td className="py-3 px-4 font-bold text-[11px]">
+                    <td className="py-3 px-2 sm:px-4 font-bold text-[11px] text-right sm:text-left">
                       <span
                         className={
                           q.difficulty === 'Easy'

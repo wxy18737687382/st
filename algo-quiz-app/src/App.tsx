@@ -14,13 +14,13 @@ const MainLayout: React.FC = () => {
   const [isExamModalOpen, setIsExamModalOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#1a1a1a] text-slate-900 dark:text-slate-100 flex flex-col transition-colors pb-14 md:pb-0 select-none">
+    <div className="h-screen h-[100dvh] bg-slate-50 dark:bg-[#1a1a1a] text-slate-900 dark:text-slate-100 flex flex-col overflow-hidden transition-colors select-none">
       {/* Official LeetCode Style Top Navbar */}
       <LeetCodeNavbar onOpenExamModal={() => setIsExamModalOpen(true)} />
 
       {/* Main View Area */}
-      <main className="flex-1 overflow-hidden flex flex-col">
-        {mode === 'workbench' && <LeetCodeWorkbench />}
+      <main className="flex-1 overflow-hidden flex flex-col min-h-0 pb-14 md:pb-0">
+        {(mode === 'workbench' || mode === 'practice') && <LeetCodeWorkbench />}
         {mode === 'problems' && (
           <div className="flex-1 overflow-y-auto">
             <ProblemListView />

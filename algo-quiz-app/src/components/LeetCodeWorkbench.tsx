@@ -42,6 +42,7 @@ export const LeetCodeWorkbench: React.FC = () => {
 
   // Tabs
   const [activeTab, setActiveTab] = useState<'desc' | 'solution' | 'submissions' | 'notes'>('desc');
+  const [mobileTab, setMobileTab] = useState<'desc' | 'editor' | 'solution' | 'submissions' | 'notes'>('desc');
   const [language, setLanguage] = useState<'python3' | 'pytorch' | 'sql' | 'cpp'>('python3');
   const [isConsoleOpen, setIsConsoleOpen] = useState(true);
   const [consoleTab, setConsoleTab] = useState<'case1' | 'case2' | 'result'>('case1');
@@ -71,6 +72,7 @@ export const LeetCodeWorkbench: React.FC = () => {
       );
     }
     setActiveTab('desc');
+    setMobileTab('desc');
     setConsoleOutput('');
   }, [currentQuestion]);
 
@@ -173,13 +175,92 @@ export const LeetCodeWorkbench: React.FC = () => {
   const linesCount = editorCode.split('\n').length;
 
   return (
-    <div className="flex-1 flex flex-col h-[calc(100vh-3rem)] overflow-hidden bg-slate-100 dark:bg-[#1a1a1a] text-slate-800 dark:text-slate-200">
+    <div className="h-full flex-1 flex flex-col overflow-hidden min-h-0 bg-slate-100 dark:bg-[#1a1a1a] text-slate-800 dark:text-slate-200">
+      {/* Mobile Top Segmented Control Tab Bar (< lg) */}
+      <div className="lg:hidden flex items-center bg-white dark:bg-[#222] border-b border-slate-200 dark:border-[#333] px-2 py-1.5 gap-1 select-none text-xs shrink-0">
+        <button
+          onClick={() => {
+            setMobileTab('desc');
+            setActiveTab('desc');
+          }}
+          className={`flex-1 py-1.5 rounded-lg flex items-center justify-center gap-1 font-medium transition ${
+            mobileTab === 'desc'
+              ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold shadow-xs'
+              : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
+          }`}
+        >
+          <FileText className="w-3.5 h-3.5 text-blue-500" />
+          <span>题目</span>
+        </button>
+
+        <button
+          onClick={() => setMobileTab('editor')}
+          className={`flex-1 py-1.5 rounded-lg flex items-center justify-center gap-1 font-medium transition ${
+            mobileTab === 'editor'
+              ? 'bg-emerald-600 text-white font-bold shadow-xs'
+              : 'text-slate-500 hover:text-emerald-500'
+          }`}
+        >
+          <Terminal className="w-3.5 h-3.5 text-emerald-400" />
+          <span>代码沙盒</span>
+        </button>
+
+        <button
+          onClick={() => {
+            setMobileTab('solution');
+            setActiveTab('solution');
+          }}
+          className={`flex-1 py-1.5 rounded-lg flex items-center justify-center gap-1 font-medium transition ${
+            mobileTab === 'solution'
+              ? 'bg-[#ffa116] text-slate-950 font-bold shadow-xs'
+              : 'text-slate-500 hover:text-amber-500'
+          }`}
+        >
+          <Lightbulb className="w-3.5 h-3.5 text-amber-500" />
+          <span>题解考点</span>
+        </button>
+
+        <button
+          onClick={() => {
+            setMobileTab('submissions');
+            setActiveTab('submissions');
+          }}
+          className={`flex-1 py-1.5 rounded-lg flex items-center justify-center gap-1 font-medium transition ${
+            mobileTab === 'submissions'
+              ? 'bg-indigo-600 text-white font-bold shadow-xs'
+              : 'text-slate-500 hover:text-indigo-500'
+          }`}
+        >
+          <History className="w-3.5 h-3.5 text-indigo-400" />
+          <span>记录</span>
+        </button>
+
+        <button
+          onClick={() => {
+            setMobileTab('notes');
+            setActiveTab('notes');
+          }}
+          className={`py-1.5 px-2.5 rounded-lg flex items-center justify-center gap-1 font-medium transition ${
+            mobileTab === 'notes'
+              ? 'bg-purple-600 text-white font-bold shadow-xs'
+              : 'text-slate-400 hover:text-purple-400'
+          }`}
+          title="答题笔记"
+        >
+          <Edit3 className="w-3.5 h-3.5" />
+        </button>
+      </div>
+
       {/* Top WorkBench Split Panels */}
-      <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-2 p-2 overflow-hidden">
+      <div className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-2 p-1.5 sm:p-2 overflow-hidden">
         {/* LEFT PANEL: Problem Description, Solutions, Submissions, Notes */}
-        <div className="lg:col-span-6 flex flex-col bg-white dark:bg-[#262626] rounded-xl border border-slate-200 dark:border-[#333] shadow-xs overflow-hidden">
-          {/* Left Panel Tabs */}
-          <div className="h-10 bg-slate-50 dark:bg-[#222] border-b border-slate-200 dark:border-[#333] flex items-center px-2 gap-1 text-xs select-none">
+        <div
+          className={`lg:col-span-6 flex flex-col bg-white dark:bg-[#262626] rounded-xl border border-slate-200 dark:border-[#333] shadow-xs overflow-hidden min-h-0 ${
+            mobileTab !== 'editor' ? 'flex' : 'hidden lg:flex'
+          }`}
+        >
+          {/* Left Panel Tabs (Desktop only; Mobile uses top segmented bar) */}
+          <div className="h-10 bg-slate-50 dark:bg-[#222] border-b border-slate-200 dark:border-[#333] hidden lg:flex items-center px-2 gap-1 text-xs select-none">
             <button
               onClick={() => setActiveTab('desc')}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md font-medium transition-colors ${
@@ -329,6 +410,17 @@ export const LeetCodeWorkbench: React.FC = () => {
                         </ul>
                       </div>
                     )}
+
+                    {/* Mobile Quick Action to Editor */}
+                    <div className="lg:hidden pt-2">
+                      <button
+                        onClick={() => setMobileTab('editor')}
+                        className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md active:scale-98 transition"
+                      >
+                        <Terminal className="w-4 h-4" />
+                        <span>开始编写与调试代码 (进入代码沙盒) ➔</span>
+                      </button>
+                    </div>
                   </div>
               </div>
             )}
@@ -399,10 +491,22 @@ export const LeetCodeWorkbench: React.FC = () => {
         </div>
 
         {/* RIGHT PANEL: Code Editor & Testing Console */}
-        <div className="lg:col-span-6 flex flex-col bg-white dark:bg-[#262626] rounded-xl border border-slate-200 dark:border-[#333] shadow-xs overflow-hidden">
+        <div
+          className={`lg:col-span-6 flex flex-col bg-white dark:bg-[#262626] rounded-xl border border-slate-200 dark:border-[#333] shadow-xs overflow-hidden min-h-0 ${
+            mobileTab === 'editor' ? 'flex' : 'hidden lg:flex'
+          }`}
+        >
           {/* Editor Header Bar */}
           <div className="h-10 bg-slate-50 dark:bg-[#222] border-b border-slate-200 dark:border-[#333] flex items-center justify-between px-3 text-xs select-none">
             <div className="flex items-center gap-2">
+              <button
+                onClick={() => setMobileTab('desc')}
+                className="lg:hidden flex items-center gap-1 px-2 py-1 rounded bg-slate-100 dark:bg-[#333] text-[11px] text-slate-600 dark:text-slate-300 font-medium hover:text-emerald-500"
+                title="返回查看题目"
+              >
+                <FileText className="w-3 h-3 text-blue-500" />
+                <span>看题</span>
+              </button>
               {/* Language Selector */}
               <select
                 value={language}
